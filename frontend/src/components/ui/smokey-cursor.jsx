@@ -73,20 +73,6 @@ function SmokeyCursor({
       `
     )
 
-    const copyShader = compileShader(
-      gl,
-      gl.FRAGMENT_SHADER,
-      `
-        precision mediump float;
-        precision mediump sampler2D;
-        varying highp vec2 vUv;
-        uniform sampler2D uTexture;
-        void main () {
-            gl_FragColor = texture2D(uTexture, vUv);
-        }
-      `
-    )
-
     const clearShader = compileShader(
       gl,
       gl.FRAGMENT_SHADER,
@@ -333,7 +319,6 @@ function SmokeyCursor({
     let curlFBO
     let pressureFBO
 
-    const copyProgram = new Program(gl, baseVertexShader, copyShader)
     const clearProgram = new Program(gl, baseVertexShader, clearShader)
     const splatProgram = new Program(gl, baseVertexShader, splatShader)
     const advectionProgram = new Program(gl, baseVertexShader, advectionShader)
@@ -653,26 +638,6 @@ function createPointer() {
 function generateColor() {
   const brightness = 0.12
   return { r: brightness, g: brightness, b: brightness }
-}
-
-function hslToRgb(h, s, l) {
-  if (s === 0) {
-    return { r: l, g: l, b: l }
-  }
-  const hue2rgb = (p, q, t) => {
-    if (t < 0) t += 1
-    if (t > 1) t -= 1
-    if (t < 1 / 6) return p + (q - p) * 6 * t
-    if (t < 1 / 2) return q
-    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
-    return p
-  }
-  const q = l < 0.5 ? l * (1 + s) : l + s - l * s
-  const p = 2 * l - q
-  const r = hue2rgb(p, q, h + 1 / 3)
-  const g = hue2rgb(p, q, h)
-  const b = hue2rgb(p, q, h - 1 / 3)
-  return { r, g, b }
 }
 
 function getWebGLContext(canvas) {

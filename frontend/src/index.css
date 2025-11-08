@@ -346,3 +346,218 @@ a:hover {
   mix-blend-mode: screen;
 }
 
+.page-shell {
+  min-height: 100vh;
+  padding: clamp(3rem, 6vw, 5rem) clamp(2rem, 6vw, 6rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2rem, 6vw, 4rem);
+}
+
+.page-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.page-actions .primary-button {
+  flex-shrink: 0;
+}
+
+.page-header {
+  display: grid;
+  gap: 0.85rem;
+  max-width: 48rem;
+}
+
+.page-title {
+  font-size: clamp(3rem, 8vw, 5rem);
+  text-transform: lowercase;
+  letter-spacing: -0.015em;
+  color: #f0f0f0;
+}
+
+.page-subtitle {
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  line-height: 1.7;
+  color: rgba(220, 220, 220, 0.7);
+  max-width: 38rem;
+}
+
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+.page-card {
+  padding: clamp(1.8rem, 4vw, 2.6rem);
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 24px 40px -24px rgba(0, 0, 0, 0.65),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(28px) saturate(120%);
+  display: grid;
+  gap: 1rem;
+}
+
+.page-card--wide {
+  grid-column: 1 / -1;
+}
+
+.page-card-title {
+  font-size: 1.3rem;
+  text-transform: lowercase;
+  color: rgba(245, 245, 245, 0.9);
+}
+
+.page-metric {
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.page-note {
+  font-size: 0.95rem;
+  color: rgba(210, 210, 210, 0.7);
+  max-width: 32rem;
+  line-height: 1.7;
+}
+
+.page-list {
+  display: grid;
+  gap: 0.6rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(235, 235, 235, 0.78);
+}
+
+.page-list li {
+  display: flex;
+  justify-content: space-between;
+  text-transform: lowercase;
+}
+
+.primary-button--compact {
+  height: 3.2rem;
+  padding: 0 3rem;
+  font-size: 0.95rem;
+}
+
+.primary-button.is-active {
+  background: rgba(255, 255, 255, 0.22);
+  color: #111;
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.webcam-stage {
+  position: relative;
+  width: 100%;
+  border-radius: 32px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.7);
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  box-shadow:
+    0 24px 60px -28px rgba(0, 0, 0, 0.75),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+.webcam-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: contrast(1.1) saturate(1.15) brightness(1);
+  transform: scaleX(-1);
+}
+
+.webcam-overlay-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transform: scaleX(-1);
+  z-index: 2;
+}
+
+.webcam-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  background: linear-gradient(160deg, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.35));
+  z-index: 3;
+}
+
+.webcam-controls {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.posture-chart {
+  width: 100%;
+  height: 260px;
+}
+
+.posture-chart-grid {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.posture-chart-figure {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.posture-chart-label {
+  font-size: 0.9rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(220, 230, 255, 0.65);
+}
+
+.chart__axis line,
+.chart__axis path {
+  stroke: rgba(148, 163, 184, 0.4);
+}
+
+.chart__axis text {
+  fill: rgba(148, 163, 184, 0.9);
+  font-size: 0.75rem;
+}
+
+.summary-chart {
+  width: 100%;
+  max-width: 640px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 18px 36px -20px rgba(15, 23, 42, 0.6),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  display: block;
+  margin: 0 auto;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.summary-raw-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+

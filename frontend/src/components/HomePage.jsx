@@ -1,16 +1,28 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
-import SubtleDots from '@/components/ui/subtle-dots'
-import PointerDot from '@/components/ui/pointer-dot'
 import PostureLogo from '@/components/ui/posture-logo'
 import LoadingScreen from '@/components/ui/loading-screen'
-import SmokeyCursor from '@/components/ui/smokey-cursor'
 
-export default function HomePage() {
+export default function HomePage({ onBegin, onViewSummary, hasSummary }) {
   const titleRef = useRef(null)
   const heroRef = useRef(null)
   const [showLoader, setShowLoader] = useState(true)
   const [isReady, setIsReady] = useState(false)
+
+  useEffect(() => {
+    if (!isReady) return
+    if (!onBegin) return
+
+    const handleKeydown = (event) => {
+      if (event.code === 'Space') {
+        event.preventDefault()
+        onBegin()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeydown)
+    return () => window.removeEventListener('keydown', handleKeydown)
+  }, [isReady, onBegin])
 
   useEffect(() => {
     if (!isReady) return
@@ -78,17 +90,8 @@ export default function HomePage() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-aurora">
+    <div className="relative min-h-screen overflow-hidden">
       {showLoader && <LoadingScreen onFinish={handleLoaderFinish} />}
-      {isReady && (
-        <>
-          <SubtleDots />
-          <PointerDot />
-        </>
-      )}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="grid-overlay absolute inset-0" aria-hidden="true" />
-      </div>
 
       <div
         ref={heroRef}
@@ -127,24 +130,25 @@ export default function HomePage() {
             </div>
 
             <div className="flex justify-center pt-2">
-              <button type="button" className="hero-button primary-button px-16 text-lg">
+              <button
+                type="button"
+                className="hero-button primary-button px-16 text-lg"
+                onClick={onBegin}
+              >
                 <span>press space to start</span>
               </button>
             </div>
+
+            {hasSummary && (
+              <div className="flex justify-center pt-4">
+                <button type="button" className="primary-button primary-button--compact px-12" onClick={onViewSummary}>
+                  <span>view last session summary</span>
+                </button>
+              </div>
+            )}
           </div>
         </section>
       </div>
-
-      <SmokeyCursor
-        simulationResolution={96}
-        dyeResolution={960}
-        densityDissipation={4.5}
-        velocityDissipation={2.5}
-        curl={2}
-        splatRadius={0.12}
-        splatForce={3200}
-        colorUpdateSpeed={6}
-      />
     </div>
   )
 }
