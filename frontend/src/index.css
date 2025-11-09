@@ -1,6 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Melodrama:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
+.webcam-shell__placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
 :root {
   color-scheme: dark;
   --background-900: #030303;
@@ -541,8 +548,9 @@ a:hover {
 }
 
 .webcam-shell {
-  width: min(92vw, 1400px);
-  height: 85vh;
+  width: min(90vw, 960px);
+  aspect-ratio: 16 / 9;
+  height: auto;
   border-radius: 36px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.06), transparent 55%),
@@ -568,7 +576,68 @@ a:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 36px;
+  border-radius: 28px;
+}
+.live-layout-top {
+  display: grid;
+  grid-template-columns: minmax(360px, 960px) minmax(280px, 360px);
+  gap: clamp(1.6rem, 3vw, 2.6rem);
+  align-items: start;
+}
+
+.live-layout-top__video {
+  display: grid;
+  gap: 1.2rem;
+  position: relative;
+}
+
+.live-layout-top__aside {
+  display: grid;
+  gap: 1.2rem;
+  justify-items: stretch;
+}
+
+.webcam-shell__stream {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.webcam-shell__status {
+  padding: 1.1rem 1.6rem;
+  border-radius: 18px;
+  background: rgba(10, 12, 28, 0.72);
+  border: 1px solid rgba(120, 190, 255, 0.2);
+  backdrop-filter: blur(14px);
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.webcam-shell__status span {
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.webcam-shell__status--good {
+  border-color: rgba(34, 197, 94, 0.35);
+  color: rgba(34, 197, 94, 0.92);
+}
+
+.webcam-shell__status--moderate {
+  border-color: rgba(245, 158, 11, 0.35);
+  color: rgba(245, 158, 11, 0.92);
+}
+
+.webcam-shell__status--bad {
+  border-color: rgba(239, 68, 68, 0.35);
+  color: rgba(239, 68, 68, 0.92);
+}
+
+.webcam-shell__status--calibrating {
+  border-color: rgba(148, 163, 184, 0.35);
+  color: rgba(226, 232, 240, 0.9);
 }
 
 .webcam-shell__error {
@@ -589,6 +658,48 @@ a:hover {
   font-size: 1rem;
   line-height: 1.6;
   opacity: 0.8;
+}
+
+.webcam-analytics {
+  display: grid;
+  gap: 1.2rem;
+  padding: 1.8rem;
+  border-radius: 28px;
+  background: rgba(8, 10, 12, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  min-height: 320px;
+}
+
+.webcam-analytics__header h2 {
+  font-size: 1.3rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(248, 250, 252, 0.95);
+}
+
+.webcam-analytics__header p {
+  margin-top: 0.35rem;
+  color: rgba(226, 232, 240, 0.78);
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+}
+
+.webcam-chart {
+  width: 100%;
+  height: 220px;
+}
+
+.posture-dot {
+  filter: drop-shadow(0 4px 8px rgba(15, 15, 15, 0.45));
+}
+
+.webcam-controls-top {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-bottom: -3.2rem;
+  transform: translateY(1.5rem);
+  z-index: 20;
 }
 
 .chart__axis line,
