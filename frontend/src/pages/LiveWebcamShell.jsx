@@ -5,6 +5,8 @@ import SubtleDots from '@/components/ui/subtle-dots'
 import PointerDot from '@/components/ui/pointer-dot'
 import SmokeyCursor from '@/components/ui/smokey-cursor'
 
+// We read the backend base URL from Vite so the demo can point to a remote Flask
+// server when needed, but default to localhost during local development.
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000'
 
 export default function LiveWebcamShell() {
@@ -18,6 +20,7 @@ export default function LiveWebcamShell() {
   const videoRef = useRef(null)
 
   useEffect(() => {
+    // Ease the live dashboard in so navigating from the hero feels deliberate.
     const el = rootRef.current
     if (!el) return
     gsap.fromTo(
@@ -34,6 +37,7 @@ export default function LiveWebcamShell() {
       const response = await fetch(`${API_BASE_URL}/api/session/start`, { method: 'POST' })
       if (!response.ok) throw new Error(await response.text())
       await response.json()
+      // Bust the cache with a timestamp so the browser always reloads the MJPEG stream.
       const url = `${API_BASE_URL}/api/video_feed?ts=${Date.now()}`
       setStreamUrl(url)
       if (videoRef.current) {
@@ -54,6 +58,7 @@ export default function LiveWebcamShell() {
       if (!response.ok) throw new Error(await response.text())
       const payload = await response.json()
       if (payload?.snapshot) {
+        // Merge a final “snapshot” so the user can review their session after stopping.
         setSummary((prev) => ({ ...(prev ?? {}), ...payload.snapshot }))
       }
     } catch (error) {
@@ -69,6 +74,8 @@ export default function LiveWebcamShell() {
   }
 
   useEffect(() => {
+    // Poll the posture summary so the UI keeps breathing even though we
+    // stream video through a plain <img>.
     const fetchSummary = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/session/posture`)
@@ -90,6 +97,8 @@ export default function LiveWebcamShell() {
   }, [])
 
   useEffect(() => {
+    // Keep the local button state in sync with the backend truth. If someone
+    // refreshes the browser mid-run we still show the correct CTA.
     const isRunning = summary?.is_running ?? false
     setSessionPhase((prev) => {
       if (isRunning && (prev === 'starting' || prev === 'idle')) {
@@ -106,6 +115,7 @@ export default function LiveWebcamShell() {
   }, [summary?.is_running])
 
   useEffect(() => {
+    // Whenever the backend gives us fresh intervals, rebuild the chart in place.
     const intervals = summary?.intervals ?? []
     const svgElement = chartRef.current
     if (!svgElement) return
@@ -208,6 +218,7 @@ export default function LiveWebcamShell() {
   }, [summary?.intervals])
 
   return (
+    // The layout is a three-tile “bento”: live video, status card, and trend chart.
     <div ref={rootRef} className="relative min-h-screen overflow-hidden bg-aurora">
       <SubtleDots />
       <SmokeyCursor
@@ -312,6 +323,7 @@ function PostureSummary({ summary }) {
 
   return (
     <div className={`webcam-shell__status webcam-shell__status--${summary.classification}`}>
+      {/* Human readable title corresponding to the backend classification. */}
       <p className="webcam-shell__status-heading">{formatStatus(summary.status_message)}</p>
       <p>
         Starting angle: <span>{baseline != null ? `${baseline.toFixed(1)}°` : 'capturing…'}</span>

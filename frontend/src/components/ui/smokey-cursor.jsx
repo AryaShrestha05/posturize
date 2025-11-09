@@ -1,5 +1,9 @@
 import { useEffect, useRef } from 'react'
 
+// This is a WebGL “fluid simulation” cursor adapted for the project. It mirrors the
+// behaviour of the SplashCursor demo but keeps the API surface lean so we can drop
+// it into our React tree like any other component.
+
 function SmokeyCursor({
   simulationResolution = 128,
   dyeResolution = 1440,

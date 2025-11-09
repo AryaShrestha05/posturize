@@ -15,11 +15,15 @@ from mediapipe.framework.formats import landmark_pb2
 mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 
-MAX_SAMPLES = 3600  # keep up to an hour of 1 Hz samples
+# We store at most one hour of samples (1 per second) in memory – no database needed.
+MAX_SAMPLES = 3600
+# Duration of the stillness window we use to learn the user's neutral head angle.
 CALIBRATION_SECONDS = 3.0
 
 state_lock = threading.Lock()
 
+# session_state keeps all of the posture session metadata in-memory. We guard every
+# read/write with `state_lock`, so the camera thread and HTTP handlers do not race.
 session_state = {
     "is_running": False,
     "start_time": None,
@@ -35,6 +39,7 @@ session_state = {
 
 
 def create_app() -> Flask:
+    """Configure the Flask app, register the endpoints, and wire up CORS."""
     app = Flask(__name__)
     CORS(app, resources={r"/*": {"origins": "*"}})
 
@@ -44,6 +49,7 @@ def create_app() -> Flask:
 
     @app.post("/api/session/start")
     def start_session():
+        # Reset all posture state so the backend returns to the calibration phase.
         reset_session_state()
         return {"status": "started"}
 
@@ -55,6 +61,7 @@ def create_app() -> Flask:
                 "data": list(session_state["data"]),
                 "intervals": compute_intervals(list(session_state["data"])),
             }
+            # Flip the running flag so the stream loop knows to ignore stale frames.
             session_state["is_running"] = False
             session_state["status_message"] = "Session stopped. Start to capture a new baseline."
             session_state["classification"] = "idle"
@@ -105,6 +112,7 @@ def reset_session_state() -> None:
 
 
 def stream_with_visualization() -> Generator[bytes, None, None]:
+    """Capture webcam frames, draw pose overlays, and stream them as MJPEG."""
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         raise RuntimeError("Unable to open webcam")
@@ -202,6 +210,7 @@ def stream_with_visualization() -> Generator[bytes, None, None]:
 
 
 def update_session_state(results, frame) -> None:
+    """Update calibration and posture metrics for the latest MediaPipe frame."""
     now = time.time()
     with state_lock:
         if not session_state["is_running"]:
@@ -242,7 +251,7 @@ def update_session_state(results, frame) -> None:
             session_state["classification"] = "calibrating" if baseline is None else "good"
         return
 
-    delta = float(nose_angle - baseline)
+    delta = float(nose_angle - baseline)  # Positive == looking up, negative == looking down.
     classification = classify_delta(delta)
 
     with state_lock:
@@ -258,6 +267,7 @@ def update_session_state(results, frame) -> None:
 
 
 def classify_delta(delta: float) -> str:
+    """Bucket the head tilt delta into one of our posture zones."""
     if delta >= 10.0:
         return "bad"
     if delta >= 5.0:
@@ -276,6 +286,7 @@ def classification_message(classification: str) -> str:
 
 
 def compute_intervals(data_points: List[dict]) -> List[dict]:
+    """Roll up 1 Hz samples into 10 second windows so the D3 chart stays tidy."""
     if not data_points:
         return []
 
@@ -303,6 +314,7 @@ def compute_intervals(data_points: List[dict]) -> List[dict]:
 
 
 def calculate_angle(a: np.ndarray, b: np.ndarray, c: np.ndarray) -> float:
+    """Return the angle ABC in degrees, guarding against collapsed vectors."""
     ba = a - b
     bc = c - b
     denom = np.linalg.norm(ba) * np.linalg.norm(bc)
