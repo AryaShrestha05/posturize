@@ -125,7 +125,17 @@ def stream_with_visualization() -> Generator[bytes, None, None]:
     """Capture webcam frames, draw pose overlays, and stream them as MJPEG."""
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
-        raise RuntimeError("Unable to open webcam")
+        # Return a placeholder black frame if webcam is not available
+        print("WARNING: Webcam not available, streaming placeholder frames")
+        while True:
+            # Create a black frame
+            frame = np.zeros((480, 640, 3), dtype=np.uint8)
+            cv2.putText(frame, "Webcam not available", (150, 240), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+            _, buffer = cv2.imencode('.jpg', frame)
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+            time.sleep(0.033)  # ~30 FPS
+        return
 
     pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
